@@ -14,6 +14,8 @@ const LIBEBUR128_BASE_NAME: &str = "ebur128";
 fn main() {
 
 	use std::env;
+	
+	let target_os = env::var("CARGO_CFG_TARGET_OS").unwrap();
 	let out_dir = env::var("OUT_DIR").unwrap();
 	let out_path =  Path::new(out_dir.as_str());
 	let c_src_dir = "c-libebur128-src-".to_owned().add(LIBEBUR128_GIT_TAG);
@@ -44,7 +46,10 @@ fn main() {
 
 	println!("INFO: cmake wrote library to {}", libpath.display());
 
-	let libname = LIBEBUR128_BASE_NAME.to_owned() + "_static";
+	let mut libname = LIBEBUR128_BASE_NAME.to_owned();
+	if target_os.eq("windows") {
+		libname.push_str("_static");
+	}
 	println!("cargo:rustc-link-search=native={}", libpath.display());
 	println!("cargo:rustc-link-lib=static={}", libname);
 
