@@ -31,8 +31,9 @@ fn main() {
 		.expect(("failed to clone: ".to_owned() + LIBEBUR128_GIT_URL).as_str());
 
 		// build revision object that we need for checkout
-		let revname = "refs/tags/".to_owned().add(LIBEBUR128_GIT_TAG).as_str();
-		let revision = repo.revparse_single(revname)
+		// NOTE: to get master, we'd reference 'refs/heads/master' here
+		let revname = String::from("refs/tags/").add(LIBEBUR128_GIT_TAG);
+		let revision = repo.revparse_single(&revname)
 		.expect("ERROR:cannot parse checkout revision");
 
 		// checkout selected revision (tag)
