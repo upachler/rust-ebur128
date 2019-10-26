@@ -1,17 +1,5 @@
-[package]
-name = "ebur128"
-version = "0.1.0"
-authors = ["uwepa"]
-edition = "2018"
-license = "MIT"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
-[build-dependencies]
-git2 = "0.10.1"
-cmake = "0.1.42"
-
-[dependencies]
-libc = "0.2.65"
-num-traits = "0.2"
-num-derive = "0.3"
+[workspace]
+members = [
+  "ebur128",
+  "ebur128-sys"
+]

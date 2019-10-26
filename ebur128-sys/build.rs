@@ -25,21 +25,22 @@ fn main() {
 	if c_libebur128_src_path.exists() {
 		println!("INFO: libebur128 C source exists in {}, skipping clone", c_libebur128_src_path.to_str().unwrap());
 	} else {
+		// clone source repository
 		println!("INFO: cloning {} into {}...", LIBEBUR128_GIT_URL, c_libebur128_src_path.to_str().unwrap());
 		let repo = Repository::clone(LIBEBUR128_GIT_URL, c_libebur128_src_path.as_path()) 
 		.expect(("failed to clone: ".to_owned() + LIBEBUR128_GIT_URL).as_str());
 
-		//let revname = "refs/tags/".to_owned().add(LIBEBUR128_GIT_TAG).as_str();
-		let revname = "refs/heads/master";
+		// build revision object that we need for checkout
+		let revname = "refs/tags/".to_owned().add(LIBEBUR128_GIT_TAG).as_str();
 		let revision = repo.revparse_single(revname)
 		.expect("ERROR:cannot parse checkout revision");
 
+		// checkout selected revision (tag)
 		repo.checkout_tree(&revision, None)
 		.expect("ERROR:checkout failed");
 
 		println!("INFO: done.");
 	}
-	// FIXME: need to checkout tag, not master
 
 	let dst = cmake::build(c_libebur128_src_path.to_str().unwrap());
 	let libpath = dst.join("lib");
@@ -48,6 +49,7 @@ fn main() {
 
 	let mut libname = LIBEBUR128_BASE_NAME.to_owned();
 	if target_os.eq("windows") {
+		// on windows, the built static library has a suffix
 		libname.push_str("_static");
 	}
 	println!("cargo:rustc-link-search=native={}", libpath.display());
