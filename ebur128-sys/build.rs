@@ -6,10 +6,31 @@ use git2::Repository;
 use std::path::Path;
 use std::ops::Add;
 
+enum LibVersion {
+	Master,
+	Tag(&'static str)
+}
+
 const LIBEBUR128_GIT_URL: &str = "https://github.com/jiixyj/libebur128.git";
-const LIBEBUR128_GIT_TAG: &str = "v1.2.4";
 
 const LIBEBUR128_BASE_NAME: &str = "ebur128";
+
+const LIB_VERSION: LibVersion = LibVersion::Tag("v1.2.4");
+
+impl LibVersion {
+	fn git_ref_name(&self) -> String {
+		match self {
+			Self::Master => String::from("refs/heads/master"),
+			Self::Tag(v) => String::from("refs/tags/").add(v)
+		}
+	}
+	fn src_dir_name(&self) -> &'static str {
+		match self {
+			Self::Master => "master",
+			Self::Tag(v) => v,
+		}
+	}
+}
 
 fn main() {
 
@@ -18,7 +39,7 @@ fn main() {
 	let target_os = env::var("CARGO_CFG_TARGET_OS").unwrap();
 	let out_dir = env::var("OUT_DIR").unwrap();
 	let out_path =  Path::new(out_dir.as_str());
-	let c_src_dir = "c-libebur128-src-".to_owned().add(LIBEBUR128_GIT_TAG);
+	let c_src_dir = "c-libebur128-src-".to_owned().add(LIB_VERSION.src_dir_name());
 	let c_src_path = Path::new(&c_src_dir);
 	let c_libebur128_src_path = out_path.join(c_src_path);
 
@@ -32,7 +53,7 @@ fn main() {
 
 		// build revision object that we need for checkout
 		// NOTE: to get master, we'd reference 'refs/heads/master' here
-		let revname = String::from("refs/tags/").add(LIBEBUR128_GIT_TAG);
+		let revname = LIB_VERSION.git_ref_name();
 		let revision = repo.revparse_single(&revname)
 		.expect("ERROR:cannot parse checkout revision");
 
