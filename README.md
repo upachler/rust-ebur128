@@ -12,6 +12,7 @@ In order vor all of this to work, you'll need these prerequisites installed:
  * A C compiler (gcc/clang on unix systems, Visual Studio on windows)
  * cmake from cmake.org
  * Rust (of course!), tested with 1.38 (stable)
+ * LLVM (for bindgen). See [bindgen prerequisites](https://rust-lang.github.io/rust-bindgen/requirements.html) on how to install it.
 After that, simply run `cargo build` to build the crate.
 
 # Using the crate

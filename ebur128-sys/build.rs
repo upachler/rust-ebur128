@@ -56,5 +56,15 @@ fn main() {
 	println!("cargo:rustc-link-search=native={}", libpath.display());
 	println!("cargo:rustc-link-lib=static={}", libname);
 
+	// generate bindings file
+	let bindings = bindgen::Builder::default()
+        .header(out_path.join(c_src_path).join("ebur128").join("ebur128.h").to_str().unwrap())
+        .generate()
+        .expect("Unable to generate bindings");
+
+    bindings
+        .write_to_file(out_path.join("bindings.rs"))
+        .expect("Couldn't write bindings!");
+
 }
 

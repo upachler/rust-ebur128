@@ -10,78 +10,78 @@ use libc::*;
 use ebur128_sys::*;
 
 pub enum Mode {
-    M          = (1 << 0),
-    S          = (1 << 1) | Mode::M as isize,
-    I          = (1 << 2) | Mode::M as isize,
-    LRA        = (1 << 3) | Mode::S as isize,
-    SamplePeak = (1 << 4) | Mode::M as isize,
-    TruePeak   = (1 << 5) | Mode::M as isize | Mode::SamplePeak as isize,
-    Histogram  = (1 << 6)
+    M          = mode_EBUR128_MODE_M           as isize,
+    S          = mode_EBUR128_MODE_S           as isize,
+    I          = mode_EBUR128_MODE_I           as isize,
+    LRA        = mode_EBUR128_MODE_LRA         as isize,
+    SamplePeak = mode_EBUR128_MODE_SAMPLE_PEAK as isize,
+    TruePeak   = mode_EBUR128_MODE_TRUE_PEAK   as isize,
+    Histogram  = mode_EBUR128_MODE_HISTOGRAM   as isize
 }
 
 
 
 pub enum Channel {
     /// unused channel (for example LFE channel)
-    Unused = 0,
+    Unused = channel_EBUR128_UNUSED as isize,
     /// itu M+030
-    Mp030  = 1, 
-    Mm030  = 2,     /**< itu M-030 */
-    Mp000  = 3,     /**< itu M+000 */
-    Mp110  = 4,     /**< itu M+110 */
-    Mm110  = 5,     /**< itu M-110 */
-    DualMono,      /**< a channel that is counted twice */
-    MpSC,           /**< itu M+SC */
-    MmSC,           /**< itu M-SC */
-    Mp060,          /**< itu M+060 */
-    Mm060,          /**< itu M-060 */
-    Mp090,          /**< itu M+090 */
-    Mm090,          /**< itu M-090 */
-    Mp135,          /**< itu M+135 */
-    Mm135,          /**< itu M-135 */
-    Mp180,          /**< itu M+180 */
-    Up000,          /**< itu U+000 */
-    Up030,          /**< itu U+030 */
-    Um030,          /**< itu U-030 */
-    Up045,          /**< itu U+045 */
-    Um045,          /**< itu U-030 */
-    Up090,          /**< itu U+090 */
-    Um090,          /**< itu U-090 */
-    Up110,          /**< itu U+110 */
-    Um110,          /**< itu U-110 */
-    Up135,          /**< itu U+135 */
-    Um135,          /**< itu U-135 */
-    Up180,          /**< itu U+180 */
-    Tp000,          /**< itu T+000 */
-    Bp000,          /**< itu B+000 */
-    Bp045,          /**< itu B+045 */
+    Mp030  = channel_EBUR128_Mp030 as isize, 
+    Mm030  = channel_EBUR128_Mm030 as isize,     /**< itu M-030 */
+    Mp000  = channel_EBUR128_Mp000 as isize,     /**< itu M+000 */
+    Mp110  = channel_EBUR128_Mp110 as isize,     /**< itu M+110 */
+    Mm110  = channel_EBUR128_Mm110 as isize,     /**< itu M-110 */
+    DualMono = channel_EBUR128_DUAL_MONO as isize,      /**< a channel that is counted twice */
+    MpSC   = channel_EBUR128_MpSC as isize,           /**< itu M+SC */
+    MmSC   = channel_EBUR128_MmSC as isize,           /**< itu M-SC */
+    Mp060  = channel_EBUR128_Mp060 as isize,          /**< itu M+060 */
+    Mm060  = channel_EBUR128_Mm060 as isize,          /**< itu M-060 */
+    Mp090  = channel_EBUR128_Mp090 as isize,          /**< itu M+090 */
+    Mm090  = channel_EBUR128_Mm090 as isize,          /**< itu M-090 */
+    Mp135  = channel_EBUR128_Mp135 as isize,          /**< itu M+135 */
+    Mm135  = channel_EBUR128_Mm135 as isize,          /**< itu M-135 */
+    Mp180  = channel_EBUR128_Mp180 as isize,          /**< itu M+180 */
+    Up000  = channel_EBUR128_Up000 as isize,          /**< itu U+000 */
+    Up030  = channel_EBUR128_Up030 as isize,          /**< itu U+030 */
+    Um030  = channel_EBUR128_Um030 as isize,          /**< itu U-030 */
+    Up045  = channel_EBUR128_Up045 as isize,          /**< itu U+045 */
+    Um045  = channel_EBUR128_Um045 as isize,          /**< itu U-030 */
+    Up090  = channel_EBUR128_Up090 as isize,          /**< itu U+090 */
+    Um090  = channel_EBUR128_Um090 as isize,          /**< itu U-090 */
+    Up110  = channel_EBUR128_Up110 as isize,          /**< itu U+110 */
+    Um110  = channel_EBUR128_Um110 as isize,          /**< itu U-110 */
+    Up135  = channel_EBUR128_Up135 as isize,          /**< itu U+135 */
+    Um135  = channel_EBUR128_Um135 as isize,          /**< itu U-135 */
+    Up180  = channel_EBUR128_Up180 as isize,          /**< itu U+180 */
+    Tp000  = channel_EBUR128_Tp000 as isize,          /**< itu T+000 */
+    Bp000  = channel_EBUR128_Bp000 as isize,          /**< itu B+000 */
+    Bp045  = channel_EBUR128_Bp045 as isize,          /**< itu B+045 */
     /// itu B-045
-    Bm045,
+    Bm045  = channel_EBUR128_Bm045 as isize,
 
-    // NOTE: in C these map to 1..5, like Mp30..Mm110 (Left and Mm110 both have 1 as value)
-    // However, as rust won't allow ambiguous mappings, we use the value | 0x1000
-    Left   = 0x1001,
-    Right  = 0x1002,
-    Center = 0x1003,
-    LeftSurround  = 0x1004,
-    RightSurround = 0x1005,
+    // NOTE: in C these map to 1..5 as isize, like Mp30..Mm110 (Left and Mm110 both have 1 as value)
+    // However as isize, as rust won't allow ambiguous mappings as isize, we use the value | 0x1000
+    Left   = 0x1000 as isize | channel_EBUR128_LEFT as isize,
+    Right  = 0x1000 | channel_EBUR128_RIGHT as isize,
+    Center = 0x1000 | channel_EBUR128_CENTER as isize,
+    LeftSurround  = 0x1000 | channel_EBUR128_LEFT_SURROUND as isize,
+    RightSurround = 0x1000 | channel_EBUR128_RIGHT_SURROUND as isize,
 
 }
 
 #[derive(FromPrimitive, PartialEq, Debug)]
 pub enum Error {
   /// EBUR128_ERROR_NOMEM
-  NoMem = 1, 
+  NoMem = error_EBUR128_ERROR_NOMEM as isize, 
   /// EBUR128_ERROR_INVALID_MODE,
-  InvalidMode,
+  InvalidMode = error_EBUR128_ERROR_INVALID_MODE as isize,
   /// EBUR128_ERROR_INVALID_CHANNEL_INDEX
-  InvalidChannelIndex,
+  InvalidChannelIndex = error_EBUR128_ERROR_INVALID_CHANNEL_INDEX as isize,
   /// EBUR128_ERROR_NO_CHANGE
-  NoChange,
+  NoChange = error_EBUR128_ERROR_NO_CHANGE as isize,
 }
 
 pub struct State {
-    ebur128_state: *mut c_void,
+    ebur128_state: *mut ebur128_state,
 }
 
 impl Drop for State {
