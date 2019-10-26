@@ -6,6 +6,7 @@ use git2::Repository;
 use std::path::Path;
 use std::ops::Add;
 
+#[allow(dead_code)]
 enum LibVersion {
 	Master,
 	Tag(&'static str)
@@ -15,7 +16,7 @@ const LIBEBUR128_GIT_URL: &str = "https://github.com/jiixyj/libebur128.git";
 
 const LIBEBUR128_BASE_NAME: &str = "ebur128";
 
-const LIB_VERSION: LibVersion = LibVersion::Tag("v1.2.4");
+const LIB_VERSION: LibVersion = LibVersion::Master; // LibVersion::Tag("v1.2.4");
 
 impl LibVersion {
 	fn git_ref_name(&self) -> String {
