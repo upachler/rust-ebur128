@@ -9,6 +9,7 @@ use num_traits::FromPrimitive;
 use libc::*;
 use ebur128_sys::*;
 
+#[derive(Copy, Clone)]
 pub enum Mode {
     M          = mode_EBUR128_MODE_M           as isize,
     S          = mode_EBUR128_MODE_S           as isize,
@@ -109,13 +110,14 @@ fn to_result_t<T>(ebur128_error: c_int, out: T) -> Result<T,Error> {
 
 
 impl State {
-    pub fn new(channels: usize, samplerate: u64, mode: Mode) -> State {
+    pub fn new(channels: usize, samplerate: u64, modes: &[Mode]) -> State {
+        // NOTE: because the original Mode enum has separate enum 
+        // members assigned to the same value, which we can't do 
+        // in rust, we mapped those higher and mask that offset
+        // back out here.
+        let mut c_mode = 0;
+        modes.iter().for_each(|mode| c_mode |= *mode as c_int & 0x0fff);
         unsafe {
-            // NOTE: because the original Mode enum has separate enum 
-            // members assigned to the same value, which we can't do 
-            // in rust, we mapped those higher and mask that offset
-            // back out here.
-            let c_mode = mode as c_int & 0x0fff;
             State {
                 ebur128_state: ebur128_init(channels as c_uint, samplerate as c_ulong, c_mode)
             }
@@ -279,7 +281,7 @@ mod tests {
         assert_eq!(2, minor);
         assert_eq!(4, patch);
 
-        let mut state = State::new(2, 44100, Mode::M);
+        let mut state = State::new(2, 44100, &[Mode::M]);
         let r = state.set_channel(0, Channel::Left);
         assert_eq!(Result::Ok(()), r);
         let r = state.set_channel(1, Channel::Right);
