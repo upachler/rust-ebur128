@@ -2,7 +2,9 @@
 extern crate git2;
 extern crate cmake;
 
-use git2::Repository;
+use git2::build::RepoBuilder;
+use git2::ProxyOptions;
+use git2::FetchOptions;
 use std::path::Path;
 use std::ops::Add;
 
@@ -47,10 +49,20 @@ fn main() {
 	if c_libebur128_src_path.exists() {
 		println!("INFO: libebur128 C source exists in {}, skipping clone", c_libebur128_src_path.to_str().unwrap());
 	} else {
-		// clone source repository
 		println!("INFO: cloning {} into {}...", LIBEBUR128_GIT_URL, c_libebur128_src_path.to_str().unwrap());
-		let repo = Repository::clone(LIBEBUR128_GIT_URL, c_libebur128_src_path.as_path()) 
-		.expect(("failed to clone: ".to_owned() + LIBEBUR128_GIT_URL).as_str());
+
+		// auto detect proxy settings from git config
+		let mut proxy_options = ProxyOptions::new();
+		proxy_options.auto();
+
+		let mut fetch_options = FetchOptions::new();
+		fetch_options.proxy_options(proxy_options);
+
+		// clone source repository
+		let repo = RepoBuilder::new()
+			.fetch_options(fetch_options)
+			.clone(LIBEBUR128_GIT_URL, c_libebur128_src_path.as_path())
+			.expect(("failed to clone: ".to_owned() + LIBEBUR128_GIT_URL).as_str());
 
 		// build revision object that we need for checkout
 		// NOTE: to get master, we'd reference 'refs/heads/master' here
